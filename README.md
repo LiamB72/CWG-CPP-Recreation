@@ -1,1 +1,1 @@
-A C++ SFML-ImGUI Project througth University Years
+A C++ SFML-ImGUI Project through University Years
