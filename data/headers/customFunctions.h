@@ -1,3 +1,10 @@
+/*
+ * This file is custom made by my hands. 
+ * It features some of the different functions I'd use
+ * in the main.cpp file. Just to avoid overloading it and is a bit cleaner. :p
+ */
+
+
 #pragma once
 
 #include "imgui.h"
