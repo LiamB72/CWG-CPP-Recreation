@@ -1,3 +1,0 @@
-C:/Users/unknownredfoxo/source/repos/LiamB72/CWG-CPP-Recreation/out/build/x64-Debug/CMakeFiles/ExampleFile_SFML_ImGUI___Copie.dir
-C:/Users/unknownredfoxo/source/repos/LiamB72/CWG-CPP-Recreation/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-C:/Users/unknownredfoxo/source/repos/LiamB72/CWG-CPP-Recreation/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
