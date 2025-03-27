@@ -47,6 +47,10 @@ void playerTab(PlayerStruct& player, const CardGraphicsStruct& cardGraphics, int
     ImGui::Text("Amount of cards in deck\t\t\t: %d cards", player.playerDeck.getHandSize());
     ImGui::Text("Amount of cards in waiting deck\t: %d cards", player.waitingDeck.getHandSize());
     ImGui::Text("Amount of victories\t\t\t\t: %d", player.victoryCount);
+    
+    ImGui::SeparatorText("AI related");
+    CardStruct aiCard = ai_Choice(player);
+    ImGui::Text("AI's best choice: <%d, %d>", aiCard.value, aiCard.suit);
 }
 
 
@@ -205,4 +209,24 @@ void setVictoryScreen(PlayerStruct& winner, PlayerStruct& notWinner, sf::Text& p
     winner.victoryCount++;
     previousWinner.setString("Player 1 won the game!");
     actionMenu0 = actionMenu1 = false;
+}
+
+int cardInDeck(CardStruct card, DeckStruct deck) {
+    auto it = find(deck.hand.begin(), deck.hand.end(), card);
+    if (it == deck.hand.end())
+        return 0; // Value was not found.
+
+    return 1;
+}
+
+CardStruct ai_Choice(PlayerStruct& pDeck, int playCard) {
+    int size = pDeck.playerDeck.getHandSize();
+    CardStruct bestChoice = pDeck.playerDeck.hand[0];
+    for (int i = 1; i < size - 1; i++) {
+        if (bestChoice < pDeck.playerDeck.hand[i]) {
+            bestChoice = pDeck.playerDeck.hand[i];
+        }
+    }
+    if (playCard) pDeck.playCard(bestChoice);
+    return bestChoice;
 }

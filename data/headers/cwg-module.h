@@ -103,6 +103,17 @@ void showTooltip(int cardIndex);
 
 void setVictoryScreen(PlayerStruct& winner, PlayerStruct& notWinner, sf::Text& previousWinner, bool actionMenu0, bool actionMenu1);
 
+/*
+// Checks if the card pass in arguments is in the deck.
+// Returns 1 if true, 0 otherwise.
+// It could just return the pointer to the card in the deck butttttttt no.
+*/
+int cardInDeck(CardStruct card, DeckStruct deck);
+
+
+CardStruct ai_Choice(PlayerStruct& pDeck, int playCard = 0);
+
+
 struct EditableSliderState {
     bool editMode = false;
 };
@@ -342,6 +353,8 @@ struct PlayerStruct {
     int playerID;
     int victoryCount = 0;
     bool confirmedCard = false;
+    bool showReadyText = true;
+    bool showActionMenu = true;
     sf::Sprite cardSprite;
 
 
@@ -354,12 +367,22 @@ struct PlayerStruct {
         }
     }
 
-    void playCard() {
+    void playCard(const CardStruct card = DEFAULT_CARD) {
         checkDeck();
         if (!playerDeck.isDeckEmpty()) {
-            currentCard = playerDeck.hand[0];
-            cardID = GameDeckStruct::getCardID(playerDeck.hand[0]);
-            confirmedCard = true;
+            if (card == DEFAULT_CARD) {
+                currentCard = playerDeck.hand[0];
+                cardID = GameDeckStruct::getCardID(playerDeck.hand[0]);
+                confirmedCard = true;
+            }
+            else {
+                // Check if the card is actually inside the deck
+                if (cardInDeck(card, playerDeck)) {
+                    currentCard = card;
+                    cardID = GameDeckStruct::getCardID(card);
+                    confirmedCard = true;
+                }
+            }
         }
     }
 

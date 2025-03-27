@@ -2,6 +2,9 @@
 
 /////   TO DO LIST:     /////
 
+// Make an AI that can play against the player.
+// Make a TO-DO list to know how to do it.
+
 ///// END OF TO DO LIST /////
 
 Changelog:
@@ -103,7 +106,7 @@ int main()
         static_cast<int> (windowSize[0]),
         static_cast<int> (windowSize[1])
         ),
-        "Window Title",
+        "Card War",
         sf::Style::Titlebar | sf::Style::Close);
 
     ImGui::SFML::Init(window);
@@ -127,16 +130,12 @@ int main()
     PlayerStruct P1(1, *cardGraphics);
     sf::Sprite* p1Card = &P1.cardSprite;
     int p1NewCardID = DEFAULT_CARD_ID;
-    bool p1ShowReadyText = true;
-    bool showP1ActionMenu = true;
 
     PlayerStruct P2(2, *cardGraphics);
     sf::Sprite* p2Card = &P2.cardSprite;
     int p2NewCardID = DEFAULT_CARD_ID;
-    bool p2ShowReadyText = true;
-    bool showP2ActionMenu = true;
 
-    bool debugWindow = true;
+    bool debugWindow = false;
     bool dropDownMenu = false;
     bool playerDebugMenu = false;
     bool spriteDebugMenu = false;
@@ -171,7 +170,7 @@ int main()
     /*ImFont* font = io.Fonts->AddFontFromFileTTF("data\\font\\MapleMono.ttf", 12);
     ImGui::PushFont(font);*/
 
-    previousRoundWinner.setFont(sfFont);                      // Set the loaded font
+    previousRoundWinner.setFont(sfFont);                    // Set the loaded font
     previousRoundWinner.setString("No Winner Yet.");        // Set the text content
     previousRoundWinner.setCharacterSize(30);               // Set the character size
     previousRoundWinner.setFillColor(sf::Color::White);     // Set the colour
@@ -207,10 +206,10 @@ int main()
         
         // ImGui Logic Here.
         ImGuiWindowFlags windowFlagsPlayers = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
-        constexpr float pWinSizeX = 550;
+        constexpr float pWinSizeX = 535;
         constexpr float pWinSizeY = 500;
 
-        if (showP1ActionMenu) {
+        if (P1.showActionMenu) {
             ImGui::SetNextWindowSize(ImVec2(pWinSizeX, pWinSizeY));
             ImGui::SetNextWindowPos(ImVec2(0,
                 static_cast<float>(windowSize[1] / 3 - cardGraphics->cardTextures[0].getSize().y / 2.0)));
@@ -227,12 +226,12 @@ int main()
                     }
                 }
             }
-            if (p1ShowReadyText)
+            if (P1.showReadyText)
                 ImGui::Text("You have not selected a card yet!");
             ImGui::End();
         }
 
-        if (showP2ActionMenu) {
+        if (P2.showActionMenu) {
             ImGui::SetNextWindowSize(ImVec2(pWinSizeX, pWinSizeY));
             ImGui::SetNextWindowPos(ImVec2(windowSize[0] - pWinSizeX,
                 static_cast<float>(windowSize[1] / 3.0 - cardGraphics->cardTextures[0].getSize().y / 2.0)));
@@ -249,14 +248,14 @@ int main()
                         P2.confirmedCard = true;
                     }
                 }
-                if (p2ShowReadyText)
+                if (P2.showReadyText)
                     ImGui::Text("You have not selected a card yet!");
             }
             ImGui::End();
         }
-
+        
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar;
-
+        
         if (debugWindow) {
             ImGui::SetNextWindowSize(ImVec2(windowSize[0], 35));
             ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -276,7 +275,7 @@ int main()
             ImGui::PopStyleColor(1);
             ImGui::PopID();
             ImGui::End();
-        
+
             // Dropdown little menu code
             if (dropDownMenu) {
                 ImGui::SetNextWindowSize(ImVec2(160, 90));
@@ -299,11 +298,11 @@ int main()
 
                 ImGui::Begin("Player", &playerDebugMenu);
                 
-                /*
+                
                 // play a round automatically without a player input.
-                */
+                
 
-                if (ImGui::Button("Play 1 Round")) {
+                if (ImGui::Button("Play a Round")) {
                     P1.playCard(); 
                     P2.playCard();
                 }
@@ -317,11 +316,11 @@ int main()
                 ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
                 if (ImGui::BeginTabBar("MyTabBar", tab_bar_flags)) {
                     if (ImGui::BeginTabItem("Player 1")) {
-                        playerTab(P1, *cardGraphics, p1NewCardID, showP1ActionMenu);
+                        playerTab(P1, *cardGraphics, p1NewCardID, P1.showActionMenu);
                         ImGui::EndTabItem();
                     }
                     if (ImGui::BeginTabItem("Player 2")) {
-                        playerTab(P2, *cardGraphics, p2NewCardID, showP2ActionMenu);
+                        playerTab(P2, *cardGraphics, p2NewCardID, P2.showActionMenu);
                         ImGui::EndTabItem();
                     }
                 }
@@ -409,14 +408,14 @@ int main()
         window.clear(sf::Color(18, 33, 43)); // Colour background
 
         if (P1.cardID != DEFAULT_CARD_ID)
-            p1ShowReadyText = false;
+            P1.showReadyText = false;
         else
-            p1ShowReadyText = true;
+            P1.showReadyText = true;
 
         if (P2.cardID != DEFAULT_CARD_ID)
-            p2ShowReadyText = false;
+            P2.showReadyText = false;
         else
-            p2ShowReadyText = true;
+            P2.showReadyText = true;
 
         // >> Start game logic HERE.
         // Upon confirmation of both parties:
@@ -425,7 +424,6 @@ int main()
             if (P1.playerDeck.getHandSize() - 1 && P2.playerDeck.getHandSize() - 1){
                 if (P1.currentCard.value > P2.currentCard.value) {
                     // Player 1 won
-                    // Winner Text Y position: (p1Card->getPosition().y + p2Card->getPosition().y) / 2
                     previousRoundWinner.setString("Player 1 won!");
                     if (!battleTime) awardRound(P1, P2, *cardGraphics, false, battleTime, &battleDeck);
                     else awardRound(P1, P2, *cardGraphics, true, battleTime, &battleDeck);
@@ -450,13 +448,13 @@ int main()
             else if (P1.playerDeck.getHandSize() - 1 == 0) {
                 P2.victoryCount++;
                 previousRoundWinner.setString("Player 2 won the game!");
-                showP1ActionMenu = showP2ActionMenu = false;
+                P1.showActionMenu = P2.showActionMenu = false;
                 P1.confirmedCard = P2.confirmedCard = false;
             }
             else if (P2.playerDeck.getHandSize() - 1 == 0) {
                 P1.victoryCount++;
                 previousRoundWinner.setString("Player 1 won the game!");
-                showP1ActionMenu = showP2ActionMenu = false;
+                P1.showActionMenu = P2.showActionMenu = false;
                 P1.confirmedCard = P2.confirmedCard = false;
             }
             
